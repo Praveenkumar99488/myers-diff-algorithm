@@ -21,9 +21,12 @@ def myers_diff(a, b):
     m = len(b)
 
     max_d = n + m
+    offset = max_d
 
-    v = {1: 0}
+    v = [0] * (2 * max_d + 1)
     trace = []
+
+    v[offset + 1] = 0
 
     for d in range(max_d + 1):
 
@@ -31,15 +34,17 @@ def myers_diff(a, b):
 
         for k in range(-d, d + 1, 2):
 
+            index = offset + k
+
             if k == -d:
-                x = v.get(k + 1, 0)
+                x = v[index + 1]
 
             elif k == d:
-                x = v.get(k - 1, 0) + 1
+                x = v[index - 1] + 1
 
             else:
-                down = v.get(k + 1, 0)
-                right = v.get(k - 1, 0) + 1
+                down = v[index + 1]
+                right = v[index - 1] + 1
 
                 if down > right:
                     x = down
@@ -52,15 +57,15 @@ def myers_diff(a, b):
                 x += 1
                 y += 1
 
-            v[k] = x
+            v[index] = x
 
             if x >= n and y >= m:
-                return backtrack(a, b, trace, d, k)
+                return backtrack(a, b, trace, d, k, offset)
 
     return []
 
 
-def backtrack(a, b, trace, d, k):
+def backtrack(a, b, trace, d, k, offset):
     operations = []
 
     x = len(a)
@@ -77,15 +82,15 @@ def backtrack(a, b, trace, d, k):
             previous_k = k - 1
 
         else:
-            down = v.get(k + 1, 0)
-            right = v.get(k - 1, 0) + 1
+            down = v[offset + k + 1]
+            right = v[offset + k - 1] + 1
 
             if down > right:
                 previous_k = k + 1
             else:
                 previous_k = k - 1
 
-        previous_x = v.get(previous_k, 0)
+        previous_x = v[offset + previous_k]
         previous_y = previous_x - previous_k
 
         while x > previous_x and y > previous_y:
