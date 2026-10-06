@@ -1,4 +1,5 @@
 import sys
+from array import array
 
 
 def read_file(path):
@@ -30,6 +31,7 @@ def myers_diff(a, b):
 
     for d in range(max_d + 1):
 
+        # Save V before processing this D.
         trace.append(v.copy())
 
         for k in range(-d, d + 1, 2):
@@ -93,11 +95,13 @@ def backtrack(a, b, trace, d, k, offset):
         previous_x = v[offset + previous_k]
         previous_y = previous_x - previous_k
 
+        # Follow the diagonal: unchanged characters.
         while x > previous_x and y > previous_y:
             operations.append(("keep", a[x - 1]))
             x -= 1
             y -= 1
 
+        # One edit operation.
         if x == previous_x:
             operations.append(("insert", b[y - 1]))
             y -= 1
@@ -107,6 +111,7 @@ def backtrack(a, b, trace, d, k, offset):
 
         k = previous_k
 
+    # Remaining diagonal at the beginning.
     while x > 0 and y > 0:
         operations.append(("keep", a[x - 1]))
         x -= 1
