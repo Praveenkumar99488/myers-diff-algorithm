@@ -24,15 +24,30 @@ def myers_diff(a, b):
     max_d = n + m
     offset = max_d
 
-    v = [0] * (2 * max_d + 1)
-    trace = []
+    if max_d == 0:
+        return []
 
+    v = [0] * (2 * max_d + 3)
     v[offset + 1] = 0
+
+    trace = []
 
     for d in range(max_d + 1):
 
-        # Save V before processing this D.
-        trace.append(v.copy())
+        # Save only the V values needed for backtracking.
+        if d == 0:
+            trace.append((1, [v[offset + 1]]))
+        else:
+            previous_d = d - 1
+            trace.append(
+                (
+                    previous_d,
+                    v[
+                        offset - previous_d:
+                        offset + previous_d + 1
+                    ]
+                )
+            )
 
         for k in range(-d, d + 1, 2):
 
@@ -62,12 +77,12 @@ def myers_diff(a, b):
             v[index] = x
 
             if x >= n and y >= m:
-                return backtrack(a, b, trace, d, k, offset)
+                return backtrack(a, b, trace, d, k)
 
     return []
 
 
-def backtrack(a, b, trace, d, k, offset):
+def backtrack(a, b, trace, d, k):
     operations = []
 
     x = len(a)
@@ -75,7 +90,10 @@ def backtrack(a, b, trace, d, k, offset):
 
     for current_d in range(d, 0, -1):
 
-        v = trace[current_d]
+        previous_d, v = trace[current_d]
+
+        def get_value(diagonal):
+            return v[diagonal + previous_d]
 
         if k == -current_d:
             previous_k = k + 1
@@ -84,24 +102,22 @@ def backtrack(a, b, trace, d, k, offset):
             previous_k = k - 1
 
         else:
-            down = v[offset + k + 1]
-            right = v[offset + k - 1] + 1
+            down = get_value(k + 1)
+            right = get_value(k - 1) + 1
 
             if down > right:
                 previous_k = k + 1
             else:
                 previous_k = k - 1
 
-        previous_x = v[offset + previous_k]
+        previous_x = get_value(previous_k)
         previous_y = previous_x - previous_k
 
-        # Follow the diagonal: unchanged characters.
         while x > previous_x and y > previous_y:
             operations.append(("keep", a[x - 1]))
             x -= 1
             y -= 1
 
-        # One edit operation.
         if x == previous_x:
             operations.append(("insert", b[y - 1]))
             y -= 1
@@ -111,7 +127,6 @@ def backtrack(a, b, trace, d, k, offset):
 
         k = previous_k
 
-    # Remaining diagonal at the beginning.
     while x > 0 and y > 0:
         operations.append(("keep", a[x - 1]))
         x -= 1
@@ -120,7 +135,6 @@ def backtrack(a, b, trace, d, k, offset):
     operations.reverse()
 
     return operations
-
 
 def print_lines_diff(operations):
     i = 0
