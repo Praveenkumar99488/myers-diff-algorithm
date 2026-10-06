@@ -1,3 +1,90 @@
+"""
+read_file():
+This function reads a file and returns all its lines. It opens the
+file in binary mode so that the original file data is kept safely.
+The file is divided into separate lines using the newline character.
+If there is an empty line at the end of the file, it is removed.
+If the file cannot be opened, the function returns None.
+
+
+myers_diff():
+This is the main function that compares the two files or lists.
+It uses the Myers Diff algorithm to find the smallest number of
+changes needed to change the first list into the second list.
+It finds which items are the same, which are deleted, and which
+are inserted. The V array stores the position reached during the
+comparison. The variable d represents the number of changes being
+tried, and k represents the diagonal being used. When two items
+are the same, the algorithm continues forward. This matching part
+is called a snake. The trace stores information that is needed
+later to find the exact changes. When the end of both lists is
+reached, the backtrack() function is called.
+
+
+backtrack():
+This function finds the actual changes after the Myers Diff
+algorithm finishes its main comparison. It starts from the end
+of both lists and moves backwards. It checks whether an item
+should be kept, inserted, or deleted. The operations are first
+stored in reverse order because the function is moving backwards.
+At the end, the operations are reversed so that they are in the
+correct order. Finally, the function returns all the operations.
+
+
+print_lines_diff():
+This function prints the normal line-by-line difference between
+the two files. A space before a line means the line is the same.
+A minus sign means the line was deleted from the old file.
+A plus sign means the line was added to the new file. It collects
+the deleted and inserted lines and then prints them in a simple
+diff format.
+
+
+get_changed_ranges():
+This function finds the exact characters that changed inside two
+different lines. It converts both lines into lists of characters
+and uses the Myers Diff algorithm again. This time, instead of
+comparing complete lines, it compares individual characters.
+It keeps track of the positions where characters were deleted or
+inserted. Finally, it returns the changed character ranges for
+both the old line and the new line.
+
+
+format_ranges():
+This function converts the changed character positions into a
+simple format that can be printed. For example, a range such as
+(2, 5) is converted into "2-5". If there are multiple ranges,
+they are joined using commas. If there is no changed range, the
+function returns a dot ".".
+
+
+print_highlight_diff():
+This function prints a detailed difference between the two files.
+It first prints the deleted and inserted lines. Then it pairs an
+old line with a new line and compares their characters. It calls
+get_changed_ranges() to find exactly which character positions
+were changed. The minus sign shows the old line, the plus sign
+shows the new line, and the question mark shows the positions
+where the characters changed.
+
+
+main():
+This function controls the complete program. First, it checks
+whether the user has entered the correct command and file paths.
+Then it reads both files using read_file(). After that, it compares
+the files using myers_diff(). If the user selects "lines", it
+prints the normal line differences. If the user selects
+"highlight", it prints the detailed character-level differences.
+It returns 0 when the program finishes successfully and returns
+2 when there is an error.
+
+
+Program Entry:
+This part checks whether the Python file is being run directly.
+If it is being run directly, it calls the main() function and
+starts the program.
+"""
+
 import sys
 from array import array
 
